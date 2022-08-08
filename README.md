@@ -10,7 +10,7 @@ Simple, efficient way of taking advantage of Roblox's Parallel Lua.
 
 3) Do the following :
 
-`
+```lua
 -- Require the Instance of the ModuleScript
 local ParallelModule = require(\_path.ParallelLua)(\_path.MyModule)
 
@@ -21,7 +21,7 @@ local paramsList = table.create(100, true) -- Just an example
 local resturns = ParallelModule("FunctionName", paramsList)
 
 print(returns)
-`
+```
 
 4) Upon calling "ParallelModule", the code will yield until all of the parameters in 'paramsList' have all been processed. Internally, we're simply iterating through the array and executing the function within coroutine.wrap. The function is yielded until this process has finished
 
@@ -33,7 +33,7 @@ The output of an example run using the code below :
 ![Three to four times more efficient!](/assets/Benchmark.png "Benchmark")
 ![Microprofiler](/assets/Microprofiler.png "Microprofiler")
 
-`
+```lua
 local pp = require(workspace.ParallelProcess)(workspace.Functions)
 
 while true do
@@ -66,5 +66,5 @@ while true do
 	
 	wait(.6)
 end
-`
+```
 
