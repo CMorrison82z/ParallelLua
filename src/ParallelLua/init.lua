@@ -42,13 +42,12 @@ return function(moduleScript, actorCount)
 			local actor = actors[actorIndex]
 
 			task.spawn(function()
-				local result = nil
-
-				if typeof(parameter) == "table" then
-					result = table.pack(actor.Function:Invoke(func, table.unpack(parameter)))
-				else
-					result = table.pack(actor.Function:Invoke(func, parameter))
-				end
+				local result = table.pack(
+					actor.Function:Invoke(
+						func,
+						if typeof(parameter) == "table" then table.unpack(parameter) else parameter
+					)
+				)
 
 				table.insert(returnValues, result)
 
