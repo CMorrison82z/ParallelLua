@@ -8,7 +8,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local DEFAULT_ACTORS = 64
 
-local actor = if RunService:IsClient() then script.ClientActor else script.Actor
+local baseActor = if RunService:IsClient() then script.ClientActor else script.Actor
 local container = Instance.new("Folder")
 
 -- ## SETUP ## --
@@ -25,7 +25,7 @@ return function(moduleScript, actorCount)
 	actorCount = actorCount or DEFAULT_ACTORS
 
 	for _ = 1, actorCount do
-		local newActor = actor:Clone()
+		local newActor = baseActor:Clone()
 		
 		newActor.Script.Disabled = false
 		newActor.Pointer.Value = moduleScript
