@@ -57,7 +57,7 @@ return function(moduleScript, actorCount)
 				end
 			end)
 
-			actorIndex %= actorCount + 1
+			actorIndex = actorIndex % actorCount + 1
 		end
 
 		coroutine.yield(runningThread)
