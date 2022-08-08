@@ -34,6 +34,20 @@ The output of an example run using the code below :
 ![Microprofiler](/assets/Microprofiler.png "Microprofiler")
 
 ```lua
+-- Functions :
+
+return {
+	Test = function(a, b)
+		for i = 1, 1e6 do
+			a, b = b, a
+		end
+		
+		return a, b
+	end,
+}
+
+-- Main script :
+
 local pp = require(workspace.ParallelProcess)(workspace.Functions)
 
 while true do
