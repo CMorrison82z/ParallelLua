@@ -22,7 +22,7 @@ script.Parent.Function.OnInvoke = function(func, ...)
 end
 ```
 
-3) Create a module script including all the executable functions. It can look like this:
+4) Create a module script including all the executable functions. It can look like this:
 ```lua
 return {
 	Test = function(a, b)
@@ -34,7 +34,7 @@ return {
 	end,
 }
 ```
-4) Create a script, and type out the following:
+5) Create a script, and type out the following:
 
 ```lua
 local ParallelModule = require(path.to.module)(path.to.functions.module)
@@ -48,7 +48,7 @@ local returnValues = ParallelModule("FunctionName", parameters)
 print(returnValues)
 ```
 
-5) Upon calling `ParallelModule`, the function will yield until all of the parameters have been processed. Internally, we're simply iterating through the array and executing the function using `task.spawn()`.
+6) Upon calling `ParallelModule`, the function will yield until all of the parameters have been processed. Internally, we're simply iterating through the array and executing the function using `task.spawn()`.
 
 ## Example Results
 
