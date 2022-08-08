@@ -1,73 +1,66 @@
+-- ## SERVICES ## --
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+-- ## VARIABLES ## --
+
 local DEFAULT_ACTORS = 64
 
-local actor;
+local actor = if RunService:IsClient() then script.ClientActor else script.Actor
 local container = Instance.new("Folder")
-container.Name = "Actors"
 
-if game:GetService("RunService"):IsClient() then
-	container.Parent = game:GetService("Players").LocalPlayer.PlayerScripts
-	
-	actor = script.ClientActor
-else
-	container.Parent = game:GetService("ServerScriptService")
-	
-	actor = script.Actor
-end
+-- ## SETUP ## --
+
+container.Name = "Actors"
+container.Parent = if RunService:IsClient() then Players.LocalPlayer.PlayerScripts else ServerScriptService
+
+-- ## RETURNING ## --
 
 return function(moduleScript, actorCount)
-	actorCount = actorCount or DEFAULT_ACTORS
-	
 	local actors = {}
-
-	do
-		for i = 1, actorCount do
-			local newActor = actor:Clone()
-			newActor.Script.Disabled = false
-			newActor.Pointer.Value = moduleScript
-			newActor.Parent = container
-
-			table.insert(actors, newActor)
-		end
-	end
-
 	local actorIndex = 1
 	
-	return function(f, params)
-		local runningThread =coroutine.running()
+	actorCount = actorCount or DEFAULT_ACTORS
 
-		local numParams = #params
+	for _ = 1, actorCount do
+		local newActor = actor:Clone()
+		
+		newActor.Script.Disabled = false
+		newActor.Pointer.Value = moduleScript
+		newActor.Parent = container
 
-		local rCount = 0
-		local returns = {}
-
-		for _, param in ipairs(params) do
-			local actor = actors[actorIndex]
-
-			coroutine.wrap(function()
-				local res; 
-
-				if type(param) == "table" then
-					res = table.pack(actor.Function:Invoke(f, table.unpack(param)))
-				else
-					res = table.pack(actor.Function:Invoke(f, param))
-				end
-
-				table.insert(returns, res)
-
-				rCount += 1
-
-				if rCount == numParams then
-					coroutine.resume(runningThread)
-				end
-			end)()
-
-			actorIndex = actorIndex % actorCount + 1
-		end
-
-
-		coroutine.yield(runningThread)
-
-		return returns
+		table.insert(actors, newActor)
 	end
 
+	return function(func, parameters)
+		local runningThread = coroutine.running()
+		local returnValues = {}
+
+		for _, parameter in parameters do
+			local actor = actors[actorIndex]
+
+			task.spawn(function()
+				local result = nil
+
+				if typeof(parameter) == "table" then
+					result = table.pack(actor.Function:Invoke(func, table.unpack(parameter)))
+				else
+					result = table.pack(actor.Function:Invoke(func, parameter))
+				end
+
+				table.insert(returnValues, result)
+
+				if #returnValues == #parameters then
+					coroutine.resume(runningThread)
+				end
+			end)
+
+			actorIndex %= actorCount + 1
+		end
+
+		coroutine.yield(runningThread)
+		return returnValues
+	end
 end
