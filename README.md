@@ -1,41 +1,29 @@
 # ParallelLua
 
-Simple, efficient way of taking advantage of Roblox's Parallel Lua.
+Simple and efficient way of taking advantage of Roblox's Parallel Lua.
 
 ## Usage
 
-1 ) Download, or get from Roblox's website [ParalleLua](https://www.roblox.com/library/10523744631/ParallelProcess)
+1) Download the module or get it from the [toolbox](https://www.roblox.com/library/10523744631/ParallelProcess).
+2) Place the module in `ReplicatedStorage` (make sure there exists an `Actor` and a `ClientActor` as children of the module). 
+3) Make sure your hierachy looks like this:
 
-2) Place the module in ReplicatedStorage (make sure there exists the Actor and ClientActor prefabs as children of the module).
+![NVIDIA_Share_9EOn4ITgjO](https://user-images.githubusercontent.com/73802888/183499469-00522ef0-89ec-46ac-8f18-149e118aa833.png)
 
-3) Do the following :
+`Pointer` should be an `ObjectValue`, `Function` a `BindableFunction`, and `Script` a normal `Script` (in the `ClientActor`, it should be a `LocalScript`) with the following content:
 
 ```lua
--- Require the Instance of the ModuleScript
-local ParallelModule = require(\_path.ParallelLua)(\_path.MyModule)
+local functions = require(script.Parent.Pointer.Value)
 
--- Create an array of parameters (Can be an array of tables as well)
-local paramsList = table.create(100, true) -- Just an example
+script.Parent.Function.OnInvoke = function(func, ...) 
+	task.desynchronize()
 
--- Returns an array of the returned results
-local resturns = ParallelModule("FunctionName", paramsList)
-
-print(returns)
+	return functions[func](...)
+end
 ```
 
-4) Upon calling "ParallelModule", the code will yield until all of the parameters in 'paramsList' have all been processed. Internally, we're simply iterating through the array and executing the function within coroutine.wrap. The function is yielded until this process has finished
-
-
-## Example Results
-
-The output of an example run using the code below :
-
-![Three to four times more efficient!](/assets/Benchmark.png "Benchmark")
-![Microprofiler](/assets/Microprofiler.png "Microprofiler")
-
+3) Create a module script including all the executable functions. It can look like this:
 ```lua
--- Functions :
-
 return {
 	Test = function(a, b)
 		for i = 1, 1e6 do
@@ -45,40 +33,57 @@ return {
 		return a, b
 	end,
 }
+```
+4) Create a script, and type out the following:
 
--- Main script :
+```lua
+local ParallelModule = require(path.to.module)(path.to.functions.module)
 
-local pp = require(workspace.ParallelProcess)(workspace.Functions)
+-- Create an array of parameters (Can be an array of tables as well)
+local parameters = table.create(100, true) -- Just an example, you could put pretty anything here (as long as it's an array of parameters)
+
+-- Returns an array of the returned results
+local returnValues = ParallelModule("FunctionName", parameters)
+
+print(returnValues)
+```
+
+5) Upon calling `ParallelModule`, the function will yield until all of the parameters have been processed. Internally, we're simply iterating through the array and executing the function using `task.spawn()`.
+
+## Example Results
+
+The output of an example run using the code below :
+
+![Three to four times more efficient!](/assets/Benchmark.png "Benchmark")
+![Microprofiler](/assets/Microprofiler.png "Microprofiler")
+
+Here's the code that was used for the benchmark above:
+```lua
+local ParallelLua = require(ReplicatedStorage.ParallelLua)(ReplicatedStorage.Functions)
 
 while true do
 	-- SEQUENTIAL LUAU 
 	
-	local s = os.clock()
+	local start = os.clock()
 	
 	for i = 1, 100 do
 		local a, b = 0, 1
+		
 		for i = 1, 1e6 do
 			a, b = b, a
 		end
 	end
 	
-	print("SEQ : ", os.clock() - s)
+	print("SEQ : ", os.clock() - start)
 	
 	-- PARALLEL LUAU
 	
-	local s = os.clock()
+	local start = os.clock()
+	local parameters = table.create(100, { 0, 1 })
 	
-	local params = {}
-
-	for i = 1, 100 do
-		table.insert(params, {0, 1})
-	end
+	ParallelLua("Test", parameters)
+	print("PARA : ", os.clock() - start)
 	
-	pp("Test", params)
-	
-	print("PARA : ", os.clock() - s)
-	
-	wait(.6)
+	task.wait(1)
 end
 ```
-
