@@ -5,12 +5,12 @@ Simple and efficient way of taking advantage of Roblox's Parallel Lua.
 ## Usage
 
 1) Download the module or get it from the [toolbox](https://www.roblox.com/library/10523744631/ParallelProcess).
-2) Place the module in ReplicatedStorage (make sure there exists an Actor and a ClientActor as children of the module). 
-3) This is what your hierachy should look like:
+2) Place the module in `ReplicatedStorage` (make sure there exists an `Actor` and a `ClientActor` as children of the module). 
+3) Make sure your hierachy looks like this:
 
-![NVIDIA_Share_WLAgjCoVjX](https://user-images.githubusercontent.com/73802888/183493612-8d6bf69a-9cfa-4e40-8ceb-1580d308cdf4.png)
+![NVIDIA_Share_9EOn4ITgjO](https://user-images.githubusercontent.com/73802888/183499469-00522ef0-89ec-46ac-8f18-149e118aa833.png)
 
-`Pointer` should be an ObjectValue, `Function` a BindableFunction, and `Script` a normal script with the following content:
+`Pointer` should be an `ObjectValue`, `Function` a `BindableFunction`, and `Script` a normal `Script` (in the `ClientActor`, it should be a `LocalScript`) with the following content:
 
 ```lua
 local functions = require(script.Parent.Pointer.Value)
@@ -48,7 +48,7 @@ local returnValues = ParallelModule("FunctionName", parameters)
 print(returnValues)
 ```
 
-5) Upon calling "ParallelModule", the function will yield until all of the parameters have been processed. Internally, we're simply iterating through the array and executing the function using `task.spawn()`.
+5) Upon calling `ParallelModule`, the function will yield until all of the parameters have been processed. Internally, we're simply iterating through the array and executing the function using `task.spawn()`.
 
 ## Example Results
 
