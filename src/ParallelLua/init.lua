@@ -11,6 +11,14 @@ local DEFAULT_ACTORS = 64
 local baseActor = if RunService:IsClient() then script.ClientActor else script.Actor
 local container = Instance.new("Folder")
 
+-- ## FUNCTIONS ## -- 
+
+local function awarn(condition, message)
+	if not condition then
+		warn(message)
+	end
+end
+
 -- ## SETUP ## --
 
 container.Name = "Actors"
@@ -35,6 +43,8 @@ return function(moduleScript, actorCount)
 	end
 
 	return function(func, parameters)
+		awarn(#parameters < 10, "Sending too many loads becomes very expensive for data transfer ! Consider combining loads together. 4 - 8 separate loads is optimal")
+
 		local runningThread = coroutine.running()
 		local returnValues = {}
 
@@ -42,18 +52,20 @@ return function(moduleScript, actorCount)
 			local actor = actors[actorIndex]
 
 			task.spawn(function()
-				local result = nil
+				local _conn; _conn = actor.Out.Event:Connect(function(result)
+					_conn:Disconnect()
+
+					table.insert(returnValues, result)
+
+					if #returnValues == #parameters then
+						coroutine.resume(runningThread)
+					end
+				end)
 
 				if typeof(parameter) == "table" then
-					result = table.pack(actor.Function:Invoke(func, table.unpack(parameter)))
+					actor.In:Fire(func, table.unpack(parameter))
 				else
-					result = table.pack(actor.Function:Invoke(func, parameter))
-				end
-
-				table.insert(returnValues, result)
-
-				if #returnValues == #parameters then
-					coroutine.resume(runningThread)
+					actor.In:Fire(func, parameter)
 				end
 			end)
 
@@ -61,6 +73,7 @@ return function(moduleScript, actorCount)
 		end
 
 		coroutine.yield(runningThread)
+
 		return returnValues
 	end
 end

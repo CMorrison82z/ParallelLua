@@ -2,6 +2,10 @@
 
 Simple and efficient way of taking advantage of Roblox's Parallel Lua.
 
+## Disclaimer
+
+After some testing, it has been decided that the use case of a setup like this is very limited. Only use this module if the computing time far exceeds the time it takes to transfer data (each load takes about .002 seconds to send and recieve).
+
 ## Usage
 
 1) Download the module or get it from the [toolbox](https://www.roblox.com/library/10523744631/ParallelProcess).

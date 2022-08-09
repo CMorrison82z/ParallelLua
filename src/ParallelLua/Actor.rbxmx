@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Actor" referent="RBXDFACFCDDA5F4467F849D106729B37187">
+	<Item class="Actor" referent="RBX5FBF404F0C47483B959197B0CC464376">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<token name="LevelOfDetail">0</token>
@@ -33,40 +33,51 @@
 			<BinaryString name="Tags"></BinaryString>
 			<OptionalCoordinateFrame name="WorldPivotData"></OptionalCoordinateFrame>
 		</Properties>
-		<Item class="Script" referent="RBX8E96A53099A84EBBA2FEAD016EFA160C">
+		<Item class="Script" referent="RBX805B0DFBF5E34690ADFC3A12A7E86BA3">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="Disabled">true</bool>
+				<bool name="Disabled">false</bool>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Script</string>
 				<token name="RunContext">0</token>
-				<string name="ScriptGuid">{F26EFAFE-A16C-4C14-84EE-7BF7EB2C0507}</string>
+				<string name="ScriptGuid">{1E0C332A-1FDC-419E-BD8B-83FC1DF70422}</string>
 				<ProtectedString name="Source"><![CDATA[local functions = require(script.Parent.Pointer.Value)
 
-script.Parent.Function.OnInvoke = function(f, ...) 
-	task.desynchronize()
-	
-	return functions[f](...)
-end]]></ProtectedString>
+local be = script.Parent.In
+local be2 = script.Parent.Out
+
+local function OnInvoke(f, ...) 
+	be2:Fire(functions[f](...))
+end
+
+be.Event:ConnectParallel(OnInvoke)]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="BindableFunction" referent="RBX91122A54DFAF4B378F058FFF8F646509">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Function</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-		</Item>
-		<Item class="ObjectValue" referent="RBXD366D20745E54EF19CB15F77E5F0E731">
+		<Item class="ObjectValue" referent="RBXDDCE5BCA24454025B0149D387D70746C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Pointer</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<Ref name="Value">null</Ref>
+			</Properties>
+		</Item>
+		<Item class="BindableEvent" referent="RBX64CF2EC93D8842A6B094DCFBEC9BE064">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Out</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="BindableEvent" referent="RBX3B058C7B4639437EB3C5547C57EB8949">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">In</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
